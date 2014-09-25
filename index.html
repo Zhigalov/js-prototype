@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Composite</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=792, user-scalable=no">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<!--<link rel="stylesheet" href="shower/themes/ribbon/styles/screen.css">-->
+    <link rel="stylesheet" href="styles/screen.css">
+    <link rel="stylesheet" href="styles/print.css" media="print">
+    <link rel="stylesheet" href="styles/idea.min.css">
+    <link rel="stylesheet" href="styles/user.css">
+</head>
+<body class="list">
+	<header class="caption">
+		<h1>Объекты. Прототипы</h1>
+		<p>Сергей Жигалов</p>
+	</header>
+
+    <section class="slide null">
+        <img src="images/yandex_lang_ru.svg" class="yandex"/>
+    </section>
+
+    <section class="slide cover h" style="background: #ffffff">
+        <img src="images/what.png" />
+    </section>
+
+    <section class="slide first">
+        <div class="arrow">
+            <img src="images/yandex_lang_ru.svg" class="yandex"/>
+            <h2>Объекты. Прототипы</h2>
+            <div class="info">
+                <p class="author"><span class="first-red">С</span>ергей Жигалов</p>
+                <p class="location">Курс разработки интерфейсов, 2014г</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <h2>Задание</h2>
+        <p>Напишите объект светофор с методами:
+            <ul>
+                <li>toRed</li>
+                <li>toGreen</li>
+                <li>toYellow</li>
+                <li>state</li>
+            </ul>
+        Методы to* переводят светофор в определённое состояние.
+        Метод state возвращает состояние светофора.
+        Для задания интервалом горения цветов используется конфиг произвольного формата.</p>
+    </section>
+
+    <section class="slide cover h w">
+        <h2>Объекты</h2>
+        <img src="images/objects.jpg" alt=""/>
+    </section>
+
+    <section class="slide">
+        <h2>Создаем объект</h2>
+        <pre class="javascript next">
+<code>var config = Object.create(null);</code>
+        </pre>
+
+        <pre class="javascript next">
+<code>var config = {};</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Добавляем свойства</h2>
+        <pre class="javascript next">
+<code>Object.defineProperty(config, 'red', { value: 30,</code>
+<code>    writable: true,</code>
+<code>    configurable: true,</code>
+<code>    enumerable: true });</code>
+        </pre>
+
+        <pre class="javascript next">
+<code><mark>&lt;bracket-access&gt; ::= &lt;identifier&gt; "[" &lt;expression&gt; "]"</mark></code>
+<code>config['y' + 'e' + 'l' + 'l' + 'o' + 'w'] = 5</code>
+        </pre>
+
+        <pre class="javascript next">
+<code><mark>&lt;dot-access&gt; ::= &lt;identifier&gt; "." &lt;identifier-name&gt;</mark></code>
+<code>config.green = 45</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Getter / Setter</h2>
+        <pre class="javascript">
+<code>var config = {</code>
+<code>    red: 30,</code>
+<code>    yellow: 5,</code>
+<code>    green: 45,</code>
+<code>    get time() {</code>
+<code>        return this.red + this.yellow + this.green;</code>
+<code>    },</code>
+<code>    set time(time) {</code>
+<code>        if (time < this.red + this.yellow) {</code>
+<code>            throw new Error('Bad value');</code>
+<code>        }</code>
+<code>            </code>
+<code>        this.green = time - this.red - this.yellow;</code>
+<code>    }</code>
+<code>};</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Использование</h2>
+        <pre class="javascript">
+<code>config.red; // 30</code>
+<code>config.yellow; // 5</code>
+<code>config.green; // 45</code>
+<code> </code>
+<code>config.time; // 80</code>
+<code>config.time = 90;</code>
+<code> </code>
+<code>config.green; // 55</code>
+        </pre>
+    </section>
+
+    <section class="slide cover w">
+        <h2>Светофор</h2>
+        <img src="images/lights.jpg" alt=""/>
+    </section>
+
+    <section class="slide">
+        <h2>Светофор</h2>
+        <pre class="javascript">
+<code>/**</code>
+<code> * Светофор</code>
+<code> *</code>
+<code> * @param {Object} config</code>
+<code> * @constructor</code>
+<code> */</code>
+<code>function Lights(config) {</code>
+<code>    // Обозначение публичных полей</code>
+<code>    this.state = null;</code>
+<code>            </code>
+<code>    // Обозначение приватных полей</code>
+<code>    this._timeout = null;</code>
+<code>    this._config = config;</code>
+<code>}</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Переключение света</h2>
+        <pre class="javascript">
+<code>/**</code>
+<code> * Переключение в желтый</code>
+<code> */</code>
+<code>Lights.prototype.toYellow = function () {</code>
+<code>    if (this._timeout) {</code>
+<code>        clearTimeout(this._timeout);</code>
+<code>    }</code>
+<code>            </code>
+<code>    this.state = 'yellow';</code>
+<code>    this._timeout = setTimeout(function () {</code>
+<code>        this.toGreen();</code>
+<code>    }.bind(this), this._config.yellow * 1000)</code>
+<code>};</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>setTimeout</h2>
+        <pre class="javascript"><code>timeout_id = setTimeout(func|code, delay)</code></pre>
+        <pre class="javascript"><code>clearTimeout(timeout_id)</code></pre>
+    </section>
+
+    <section class="slide cover h c">
+        <h2>NEW</h2>
+    </section>
+
+    <section class="slide">
+        <h2>Использование светофора</h2>
+        <pre class="javascript">
+<code>var lights = new Lights(config);</code>
+<code>lights.toYellow();</code>
+<code>            </code>
+<code>setInterval(function () {</code>
+<code>    console.log(lights.state);</code>
+<code>}, 500);</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Использование светофора</h2>
+        <pre class="javascript">
+<code>var lights = <mark>new Lights(config)</mark>;</code>
+<code>lights.toYellow();</code>
+<code>            </code>
+<code>setInterval(function () {</code>
+<code>    console.log(lights.state);</code>
+<code>}, 500);</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>new F(arguments...)</h2>
+        <ul>
+            <li>Создает пустой объект с единственным свойством __proto__, которое ссылается на F.prototype</li>
+            <li>Выполняет конструктор F в котором this — созданный ранее объект</li>
+            <li>Возвращает объект</li>
+        </ul>
+    </section>
+
+    <section class="slide">
+        <h2>new F(arguments...)</h2>
+        <pre class="javascript">
+<code>function New (F, args) {</code>
+<code>/*1*/  var n = {'__proto__': F.prototype};</code>
+<code>/*2*/  F.apply(n, args);</code>
+<code>/*3*/  return n;</code>
+<code>}</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>__proto__</h2>
+        <pre class="javascript">
+<code>function getProperty(obj, prop) {</code>
+<code>  if (obj.hasOwnProperty(prop))</code>
+<code>    return obj[prop]</code>
+<code>            </code>
+<code>  else if (obj.__proto__ !== null)</code>
+<code>    return getProperty(obj.__proto__, prop)</code>
+<code>            </code>
+<code>  else</code>
+<code>    return undefined</code>
+<code>}</code>
+        </pre>
+    </section>
+
+    <section class="slide cover w">
+        <h2>Прототипы</h2>
+        <img src="images/pLights.jpg" alt=""/>
+    </section>
+
+    <section class="slide">
+        <h2>Пешеходный светофор</h2>
+        <pre class="javascript">
+<code>/**</code>
+<code> * Пешеходный светофор</code>
+<code> *</code>
+<code> * @param config</code>
+<code> * @constructor</code>
+<code> */</code>
+<code>function PedestrianLights (config) {</code>
+<code>    Lights.call(this, config);</code>
+<code>}</code>
+<code>            </code>
+<code>PedestrianLights.prototype = new Lights();</code>
+<code>PedestrianLights.prototype.toYellow = function () {</code>
+<code>    this.toGreen();</code>
+<code>};</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Пешеходный светофор</h2>
+        <pre class="javascript">
+<code>/**</code>
+<code> * Пешеходный светофор</code>
+<code> *</code>
+<code> * @param config</code>
+<code> * @constructor</code>
+<code> */</code>
+<code>function PedestrianLights (config) {</code>
+<code>    Lights.call(this, config);</code>
+<code>}</code>
+<code>            </code>
+<code>PedestrianLights.prototype = <mark>new Lights()</mark>;</code>
+<code>PedestrianLights.prototype.toYellow = function () {</code>
+<code>    this.toGreen();</code>
+<code>};</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Безопасное наследование</h2>
+        <pre class="javascript">
+<code>function PedestrianLights (config) {</code>
+<code>    Lights.call(this, config);</code>
+<code>}</code>
+<code>            </code>
+<code>function F(){}; // Подставной конструктор</code>
+<code>F.prototype = Lights.prototype;</code>
+<code>PedestrianLights.prototype = new F();</code>
+<code>PedestrianLights.prototype.toYellow = function () {</code>
+<code>    this.toGreen();</code>
+<code>};</code>
+        </pre>
+    </section>
+
+    <!--<section class="slide">
+        <h2>Безопасное наследование</h2>
+        <pre class="javascript">
+<code>function PedestrianLights (config) {</code>
+<code>    Lights.call(this, config);</code>
+<code>}</code>
+<code>            </code>
+<code>function F(){}; // Подставной конструктор</code>
+<code>F.prototype = Lights.prototype;</code>
+<code>PedestrianLights.prototype = Object.create(Lights)</code>
+<code>PedestrianLights.prototype.toYellow = function () {</code>
+<code>    this.toGreen();</code>
+<code>};</code>
+        </pre>
+    </section>-->
+
+	<div class="progress"><div></div></div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/highlight.min.js"></script>
+    <script src="js/shower/shower.min.js"></script>
+    <script src="js/index.js"></script>
+</body>
+</html>
